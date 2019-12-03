@@ -4,18 +4,19 @@ use std::fs;
 fn main() {
   let input = fs::read_to_string("resource/day2.txt").expect("file");
 
-  let mut numbers: Vec<Cell<u32>> = input
-    .split(",")
-    .map(|v| Cell::new(v.parse::<u32>().unwrap()))
+  let numbers: Vec<Cell<u32>> = input.trim()
+    .split(',')
+    .map(|n| Cell::new(n.parse::<u32>().unwrap()))
     .collect();
 
-  println!("{:?}", op_it_up(&mut numbers));
+  let result = op_it_up(numbers);
+  // let display: Vec<u32> = result.into_iter().map(|cell| cell.get()).collect();
+
+  println!("{:?}", result[0].get());
 }
 
-fn op_it_up(numbers: &mut Vec<Cell<u32>>) -> Vec<Cell<u32>> {
-  // let mut new_numbers = numbers.to_vec();
-
-  for (i, value) in numbers.iter().step_by(4).enumerate() {
+fn op_it_up(numbers: Vec<Cell<u32>>) -> Vec<Cell<u32>> {
+  for (i, value) in numbers.iter().enumerate().step_by(4) {
     match value.get() {
       1 => numbers[numbers[i + 3].get() as usize].set(
         numbers[numbers[i + 1].get() as usize].get() + numbers[numbers[i + 2].get() as usize].get(),
@@ -28,7 +29,7 @@ fn op_it_up(numbers: &mut Vec<Cell<u32>>) -> Vec<Cell<u32>> {
     }
   }
 
-  return numbers.to_vec();
+  return numbers;
 }
 
 #[cfg(test)]
@@ -38,7 +39,7 @@ mod tests {
   #[test]
   fn test_part1() {
     assert_eq!(
-      op_it_up(&mut vec![
+      op_it_up(vec![
         Cell::new(1),
         Cell::new(0),
         Cell::new(0),
@@ -54,7 +55,7 @@ mod tests {
       ]
     );
     assert_eq!(
-      op_it_up(&mut vec![
+      op_it_up(vec![
         Cell::new(2),
         Cell::new(3),
         Cell::new(0),
@@ -70,7 +71,7 @@ mod tests {
       ]
     );
     assert_eq!(
-      op_it_up(&mut vec![
+      op_it_up(vec![
         Cell::new(2),
         Cell::new(4),
         Cell::new(4),
@@ -88,7 +89,7 @@ mod tests {
       ]
     );
     assert_eq!(
-      op_it_up(&mut vec![
+      op_it_up(vec![
         Cell::new(1),
         Cell::new(1),
         Cell::new(1),
@@ -112,7 +113,7 @@ mod tests {
       ]
     );
     assert_eq!(
-      op_it_up(&mut vec![
+      op_it_up(vec![
         Cell::new(1),
         Cell::new(9),
         Cell::new(10),
