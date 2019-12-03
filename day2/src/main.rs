@@ -4,13 +4,28 @@ use std::fs;
 fn main() {
   let input = fs::read_to_string("resource/day2.txt").expect("file");
 
-  let numbers: Vec<Cell<u32>> = input.trim()
+  let numbers: Vec<Cell<u32>> = input
+    .trim()
     .split(',')
     .map(|n| Cell::new(n.parse::<u32>().unwrap()))
     .collect();
 
+  for i in 0..99 {
+    for j in 0..99 {
+      let cur_numbers = numbers.to_vec();
+      cur_numbers[1].set(i as u32);
+      cur_numbers[2].set(j as u32);
+      let result = op_it_up(cur_numbers);
+
+      if result[0].get() == 19690720 {
+        panic!(
+          "at the disco: {}",
+          (result[1].get() * 100) + result[2].get()
+        );
+      }
+    }
+  }
   let result = op_it_up(numbers);
-  // let display: Vec<u32> = result.into_iter().map(|cell| cell.get()).collect();
 
   println!("{:?}", result[0].get());
 }
