@@ -18,65 +18,71 @@ fn main() {
     .collect();
 
   let result = op_it_up(numbers);
-
-  println!("{:?}", result[0].get());
 }
 
 fn op_it_up(numbers: Vec<Cell<i32>>) -> Vec<Cell<i32>> {
-  let mut codes = numbers.iter().map(|c| c.get());
-  loop {
-    let cur_code = codes.next().unwrap();
+  let mut i = 0;
+  while i < numbers.len() {
+    let cur_code = numbers[i].get();
+    let mut num_params = 1;
     match cur_code % 100 {
       1 => {
-        let sum = get_op_value(cur_code / 100 % 10, codes.next().unwrap(), &numbers) + get_op_value(cur_code / 1000 % 10, codes.next().unwrap(), &numbers);
-        numbers[codes.next().unwrap() as usize].set(sum);
+        num_params = 4;
+        let sum = get_op_value(cur_code / 100 % 10, numbers[i+1].get(), &numbers) + get_op_value(cur_code / 1000 % 10, numbers[i+2].get(), &numbers);
+        numbers[numbers[i+3].get() as usize].set(sum);
       },
       2 => {
-        let product = get_op_value(cur_code / 100 % 10, codes.next().unwrap(), &numbers) * get_op_value(cur_code / 1000 % 10, codes.next().unwrap(), &numbers);
-        numbers[codes.next().unwrap() as usize].set(product);
+        num_params = 4;
+        let sum = get_op_value(cur_code / 100 % 10, numbers[i+1].get(), &numbers) * get_op_value(cur_code / 1000 % 10, numbers[i+2].get(), &numbers);
+        numbers[numbers[i+3].get() as usize].set(sum);
       },
       3 => { 
         println!("What do?");
         readln! {
           (let num: i32) => {
-            numbers[codes.next().unwrap() as usize].set(num);
+            num_params = 2;
+            numbers[numbers[i+1].get() as usize].set(num);
           }
         }
       },
-      4 => println!("{}", get_op_value(cur_code / 100 % 10, codes.next().unwrap(), &numbers)),
+      4 => {
+        num_params = 2;
+        println!("{}", get_op_value(cur_code / 100 % 10, numbers[i+1].get(), &numbers));
+      },
       5 => {
-        if get_op_value(cur_code / 100 % 10, codes.next().unwrap(), &numbers) != 0 {
-          let jumpTo = get_op_value(cur_code / 1000 % 10, codes.next().unwrap(), &numbers);
-          codes.enumerate().skip_while(|(_, i)| i < &jumpTo);
-        } else {
-          codes.next();
+        num_params = 3;
+        if get_op_value(cur_code / 100 % 10, numbers[i+1].get(), &numbers) != 0 {
+          num_params = 0;
+          i = get_op_value(cur_code / 1000 % 10, numbers[i+2].get(), &numbers) as usize;
         }
       },
       6 => {
-        if get_op_value(cur_code / 100 % 10, codes.next().unwrap(), &numbers) == 0 {
-          let jumpTo = get_op_value(cur_code / 1000 % 10, codes.next().unwrap(), &numbers);
-          codes.enumerate().skip_while(|(_, i)| i < &jumpTo);
-        } else {
-          codes.next();
+        num_params = 3;
+        if get_op_value(cur_code / 100 % 10, numbers[i+1].get(), &numbers) == 0 {
+          num_params = 0;
+          i = get_op_value(cur_code / 1000 % 10, numbers[i+2].get(), &numbers) as usize;
         }
       },
       7 => {
-        if get_op_value(cur_code / 100 % 10, codes.next().unwrap(), &numbers) < get_op_value(cur_code / 100 % 10, codes.next().unwrap(), &numbers) {
-          numbers[codes.next().unwrap() as usize].set(1);
+        num_params = 4;
+        if get_op_value(cur_code / 100 % 10, numbers[i+1].get(), &numbers) < get_op_value(cur_code / 1000 % 10, numbers[i+2].get(), &numbers) {
+          numbers[numbers[i+3].get() as usize].set(1);
         } else {
-          numbers[codes.next().unwrap() as usize].set(0);
+          numbers[numbers[i+3].get() as usize].set(0);
         }
       },
       8 => {
-        if get_op_value(cur_code / 100 % 10, codes.next().unwrap(), &numbers) == get_op_value(cur_code / 100 % 10, codes.next().unwrap(), &numbers) {
-          numbers[codes.next().unwrap() as usize].set(1);
+        num_params = 4;
+        if get_op_value(cur_code / 100 % 10, numbers[i+1].get(), &numbers) == get_op_value(cur_code / 1000 % 10, numbers[i+2].get(), &numbers) {
+          numbers[numbers[i+3].get() as usize].set(1);
         } else {
-          numbers[codes.next().unwrap() as usize].set(0);
+          numbers[numbers[i+3].get() as usize].set(0);
         }
-      }
+      },
       99 => break,
       _ => panic!("{}", cur_code)
     }
+    i += num_params;
   }
 
   return numbers;
